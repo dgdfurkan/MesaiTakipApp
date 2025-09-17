@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Icon Generator</title>
+</head>
+<body>
+    <canvas id="canvas192" width="192" height="192" style="border: 1px solid #ccc; margin: 10px;"></canvas>
+    <canvas id="canvas512" width="512" height="512" style="border: 1px solid #ccc; margin: 10px;"></canvas>
+    
+    <script>
+        // SVG'yi yükle ve canvas'a çiz
+        function generateIcons() {
+            const svg = `
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+                    <!-- Buraya logo.svg içeriğini kopyala -->
+                </svg>
+            `;
+            
+            // 192x192 icon oluştur
+            const canvas192 = document.getElementById('canvas192');
+            const ctx192 = canvas192.getContext('2d');
+            const img192 = new Image();
+            
+            img192.onload = function() {
+                ctx192.drawImage(img192, 0, 0, 192, 192);
+                
+                // PNG olarak indir
+                const link192 = document.createElement('a');
+                link192.download = 'icon-192.png';
+                link192.href = canvas192.toDataURL();
+                link192.click();
+            };
+            
+            // 512x512 icon oluştur
+            const canvas512 = document.getElementById('canvas512');
+            const ctx512 = canvas512.getContext('2d');
+            const img512 = new Image();
+            
+            img512.onload = function() {
+                ctx512.drawImage(img512, 0, 0, 512, 512);
+                
+                // PNG olarak indir
+                const link512 = document.createElement('a');
+                link512.download = 'icon-512.png';
+                link512.href = canvas512.toDataURL();
+                link512.click();
+            };
+            
+            // SVG'yi data URL olarak ayarla
+            const svgBlob = new Blob([svg], {type: 'image/svg+xml'});
+            const url = URL.createObjectURL(svgBlob);
+            
+            img192.src = url;
+            img512.src = url;
+        }
+        
+        // Sayfa yüklendiğinde çalıştır
+        window.onload = generateIcons;
+    </script>
+</body>
+</html>
