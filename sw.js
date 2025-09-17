@@ -1,8 +1,8 @@
 const CACHE_NAME = 'overtime-tracker-v1';
 const urlsToCache = [
-  '/',
-  '/index.html',
-  '/manifest.json',
+  '/MesaiTakipApp/',
+  '/MesaiTakipApp/index.html',
+  '/MesaiTakipApp/manifest.json',
   'https://unpkg.com/react@18/umd/react.development.js',
   'https://unpkg.com/react-dom@18/umd/react-dom.development.js',
   'https://unpkg.com/@babel/standalone/babel.min.js',
