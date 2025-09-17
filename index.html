@@ -10,13 +10,43 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Fazla Mesai">
     <link rel="apple-touch-icon" href="icon-192.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="icon-192.png">
-    <link rel="apple-touch-startup-image" href="icon-512.png">
     <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
+        :root {
+            --primary: #667eea;
+            --primary-dark: #764ba2;
+            --secondary: #4facfe;
+            --secondary-dark: #00f2fe;
+            --success: #4caf50;
+            --danger: #ff6b6b;
+            --warning: #ffa726;
+            --text: #333;
+            --text-light: #666;
+            --bg-card: rgba(255, 255, 255, 0.95);
+            --bg-item: #f8f9ff;
+            --border: #f0f0f0;
+        }
+
+        [data-theme="dark"] {
+            --primary: #8b9dc3;
+            --primary-dark: #6c7b95;
+            --bg-card: rgba(30, 30, 30, 0.95);
+            --bg-item: #2a2a2a;
+            --text: #e0e0e0;
+            --text-light: #b0b0b0;
+            --border: #404040;
+        }
+
+        [data-theme="minimal"] {
+            --primary: #2c3e50;
+            --primary-dark: #34495e;
+            --bg-card: rgba(255, 255, 255, 0.98);
+            --bg-item: #f8f9fa;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -25,9 +55,10 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
             min-height: 100vh;
-            color: #333;
+            color: var(--text);
+            transition: all 0.3s ease;
         }
 
         .app {
@@ -39,342 +70,423 @@
 
         .header {
             text-align: center;
-            margin-bottom: 30px;
-            animation: slideDown 0.6s ease-out;
+            margin-bottom: 20px;
+            position: relative;
         }
 
         .header h1 {
             color: white;
-            font-size: 32px;
-            margin-bottom: 8px;
+            font-size: 28px;
+            margin-bottom: 5px;
             font-weight: 600;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
         }
 
         .header p {
             color: rgba(255, 255, 255, 0.9);
-            font-size: 16px;
+            font-size: 14px;
             font-weight: 300;
         }
 
+        .settings-btn {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 10px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .settings-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: rotate(90deg);
+        }
+
         .card {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 25px;
-            padding: 30px;
-            margin-bottom: 20px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-            animation: slideUp 0.8s ease-out;
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
             backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
+        .summary {
+            background: linear-gradient(135deg, var(--secondary) 0%, var(--secondary-dark) 100%);
+            color: white;
+            text-align: center;
+            padding: 15px;
+            border-radius: 15px;
+            margin-bottom: 15px;
+        }
+
+        .summary h3 {
+            font-size: 14px;
+            margin-bottom: 8px;
+            opacity: 0.9;
+        }
+
+        .summary .total-hours {
+            font-size: 32px;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 8px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 10px;
+        }
+
+        .stat-value {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 2px;
+        }
+
+        .stat-label {
+            font-size: 10px;
+            opacity: 0.9;
+        }
+
         .input-group {
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
 
         .input-group label {
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             font-weight: 500;
-            color: #555;
+            color: var(--text);
+            font-size: 14px;
         }
 
-        .input-group input, .input-group textarea {
+        .input-group input, .input-group textarea, .input-group select {
             width: 100%;
-            padding: 15px;
-            border: 2px solid #f0f0f0;
-            border-radius: 12px;
+            padding: 12px;
+            border: 2px solid var(--border);
+            border-radius: 10px;
             font-size: 16px;
             transition: all 0.3s ease;
-            background: #fafafa;
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            appearance: none;
-            box-sizing: border-box;
+            background: var(--bg-card);
+            color: var(--text);
         }
 
-        /* iOS tarih input'u için özel düzenleme */
-        .input-group input[type="date"] {
-            padding-right: 40px;
-            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%23999'%3e%3cpath fill-rule='evenodd' d='M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z' clip-rule='evenodd'/%3e%3c/svg%3e");
-            background-repeat: no-repeat;
-            background-position: right 15px center;
-            background-size: 20px;
-        }
-
-        /* iPhone Safari için ek düzenleme */
-        @supports (-webkit-touch-callout: none) {
-            .input-group input[type="date"] {
-                min-height: 50px;
-                line-height: 1.2;
-            }
-        }
-
-        .input-group input:focus, .input-group textarea:focus {
+        .input-group input:focus, .input-group textarea:focus, .input-group select:focus {
             outline: none;
-            border-color: #667eea;
-            background: white;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+            border-color: var(--primary);
+            transform: translateY(-1px);
+            box-shadow: 0 3px 10px rgba(102, 126, 234, 0.2);
+        }
+
+        .hour-buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        .hour-btn {
+            padding: 8px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--bg-card);
+            color: var(--text-light);
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .hour-btn.selected {
+            border-color: var(--primary);
+            background: var(--primary);
+            color: white;
         }
 
         .btn {
             width: 100%;
-            padding: 15px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 12px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
             color: white;
             border: none;
-            border-radius: 12px;
-            font-size: 16px;
+            border-radius: 10px;
+            font-size: 14px;
             font-weight: 500;
             cursor: pointer;
             transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
         }
 
         .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+            transform: translateY(-1px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
         }
 
-        .btn:active {
-            transform: translateY(0);
-        }
-
-        .btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: left 0.5s;
-        }
-
-        .btn:hover::before {
-            left: 100%;
+        .overtime-list {
+            max-height: 300px;
+            overflow-y: auto;
         }
 
         .overtime-item {
-            background: #f8f9ff;
-            border-radius: 12px;
-            padding: 15px;
-            margin-bottom: 10px;
-            border-left: 4px solid #667eea;
-            animation: fadeInUp 0.4s ease-out;
+            background: var(--bg-item);
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 8px;
+            border-left: 3px solid var(--primary);
             transition: all 0.3s ease;
         }
 
         .overtime-item:hover {
-            transform: translateX(5px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transform: translateX(3px);
         }
 
         .overtime-header {
             display: flex;
             justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 12px;
+            align-items: center;
+            margin-bottom: 6px;
         }
 
         .overtime-date {
             font-weight: 600;
-            color: #667eea;
-            margin-bottom: 5px;
+            color: var(--primary);
+            font-size: 13px;
         }
 
         .overtime-hours {
-            font-size: 24px;
+            font-size: 18px;
             font-weight: 700;
-            color: #333;
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .overtime-note {
-            color: #666;
-            font-size: 14px;
+            color: var(--text);
         }
 
         .delete-btn {
-            background: #ff6b6b;
+            background: var(--danger);
             color: white;
             border: none;
-            border-radius: 8px;
-            padding: 8px 12px;
+            border-radius: 6px;
+            padding: 6px 8px;
             cursor: pointer;
+            font-size: 12px;
+        }
+
+        .period-navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .current-period {
+            color: white;
+            font-weight: 600;
+            text-align: center;
+            font-size: 16px;
+        }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 25px;
+            margin: 20px;
+            max-width: 350px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+                .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: var(--text-light);
+            padding: 5px;
+        }
+
+        .theme-selector {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .theme-btn {
+            padding: 15px 10px;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            background: var(--bg-card);
+            cursor: pointer;
+            text-align: center;
             transition: all 0.3s ease;
         }
 
-        .delete-btn:hover {
-            background: #ff5252;
-            transform: scale(1.05);
-        }
-
-        .summary {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        .theme-btn.active {
+            border-color: var(--primary);
+            background: var(--primary);
             color: white;
-            text-align: center;
-            padding: 20px;
-            border-radius: 15px;
-            margin-bottom: 20px;
-            animation: pulse 2s infinite;
         }
 
-        .summary h3 {
-            font-size: 18px;
-            margin-bottom: 10px;
+        .theme-preview {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin: 0 auto 5px;
         }
 
-        .summary .total-hours {
-            font-size: 42px;
-            font-weight: 800;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        .theme-preview.default { background: linear-gradient(45deg, #667eea, #764ba2); }
+        .theme-preview.dark { background: linear-gradient(45deg, #2c3e50, #34495e); }
+        .theme-preview.minimal { background: linear-gradient(45deg, #95a5a6, #7f8c8d); }
+
+        .export-import {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .btn-secondary {
+            background: var(--text-light);
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 12px;
         }
 
         .empty-state {
             text-align: center;
-            padding: 40px 20px;
-            color: #666;
+            padding: 30px 20px;
+            color: var(--text-light);
         }
 
         .empty-state i {
-            font-size: 48px;
-            margin-bottom: 15px;
+            font-size: 36px;
+            margin-bottom: 10px;
             opacity: 0.5;
         }
 
-        .hour-buttons {
+        .period-day-selector {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 6px;
             margin-top: 10px;
+            max-height: 120px;
+            overflow-y: auto;
         }
 
-        .hour-btn {
-            padding: 10px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            background: white;
-            color: #666;
-            font-size: 14px;
+        .day-btn {
+            padding: 8px 6px;
+            border: 2px solid var(--border);
+            border-radius: 6px;
+            background: var(--bg-card);
+            color: var(--text);
+            font-size: 11px;
             font-weight: 500;
             cursor: pointer;
             transition: all 0.3s ease;
-        }
-
-        .hour-btn:hover {
-            border-color: #667eea;
-            background: #f8f9ff;
-            transform: translateY(-2px);
-        }
-
-        .hour-btn.selected {
-            border-color: #667eea;
-            background: #667eea;
-            color: white;
-            transform: scale(1.05);
-        }
-
-        .input-with-icon {
-            position: relative;
-        }
-
-        .input-with-icon i {
-            position: absolute;
-            right: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #999;
-            font-size: 18px;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-top: 15px;
-        }
-
-        .stat-item {
             text-align: center;
-            padding: 15px;
-            background: rgba(255,255,255,0.2);
-            border-radius: 15px;
-            backdrop-filter: blur(10px);
+            min-height: 32px;
         }
 
-        .stat-value {
-            font-size: 20px;
-            font-weight: 700;
-            margin-bottom: 5px;
+        .day-btn.active {
+            border-color: var(--primary);
+            background: var(--primary);
+            color: white;
         }
 
-        .stat-label {
-            font-size: 12px;
-            opacity: 0.9;
+        /* iOS tarih input düzeltmesi */
+        .input-group input[type="date"] {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            padding-right: 35px;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%23999'%3e%3cpath fill-rule='evenodd' d='M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z' clip-rule='evenodd'/%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 16px;
         }
 
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
+        @supports (-webkit-touch-callout: none) {
+            .input-group input[type="date"] {
+                min-height: 44px;
+                line-height: 1.2;
             }
         }
 
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
+        @media (max-width: 480px) {
+            .app {
+                padding: 10px;
             }
-            to {
-                opacity: 1;
-                transform: translateY(0);
+            
+            .card {
+                padding: 15px;
+                margin-bottom: 10px;
             }
-        }
-
-        @keyframes pulse {
-            0%, 100% {
-                transform: scale(1);
-            }
-            50% {
-                transform: scale(1.02);
-            }
-        }
-
-        .success-animation {
-            animation: successPulse 0.6s ease-out;
-        }
-
-        @keyframes successPulse {
-            0% {
-                transform: scale(1);
-            }
-            50% {
-                transform: scale(1.05);
-                background: #4caf50;
-            }
-            100% {
-                transform: scale(1);
+            
+            .hour-buttons {
+                grid-template-columns: repeat(3, 1fr);
             }
         }
     </style>
@@ -385,28 +497,150 @@
     <script type="text/babel">
         const { useState, useEffect } = React;
 
+        // Örnek JSON veri yapısı
+        const sampleData = {
+            settings: {
+                theme: 'default',
+                defaultHours: [0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5],
+                autoSave: true,
+                notifications: true,
+                periodStartDay: 5 // Ayın 5'i
+            },
+            overtimes: [] // Tüm mesailer tek listede
+        };
+
         function OvertimeTracker() {
-            const [overtimes, setOvertimes] = useState([]);
+            const [data, setData] = useState(sampleData);
             const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
             const [hours, setHours] = useState('');
             const [note, setNote] = useState('');
+            const [showSettings, setShowSettings] = useState(false);
+            const [currentPeriodOffset, setCurrentPeriodOffset] = useState(0); // 0: mevcut dönem, -1: önceki dönem, vb.
 
             useEffect(() => {
-                const saved = localStorage.getItem('overtimes');
+                const saved = localStorage.getItem('overtimeData');
                 if (saved) {
-                    setOvertimes(JSON.parse(saved));
+                    try {
+                        const loadedData = JSON.parse(saved);
+                        // Eski format kontrolü ve dönüştürme
+                        if (loadedData.periods) {
+                            // Eski formatı yeni formata dönüştür
+                            const allOvertimes = [];
+                            Object.values(loadedData.periods).forEach(period => {
+                                if (period.overtimes) {
+                                    allOvertimes.push(...period.overtimes);
+                                }
+                            });
+                            const convertedData = {
+                                ...sampleData,
+                                ...loadedData,
+                                overtimes: allOvertimes,
+                                periods: undefined // Eski periods'u sil
+                            };
+                            // Dönem başlangıç günü yoksa varsayılan değer ata
+                            if (!convertedData.settings.periodStartDay) {
+                                convertedData.settings.periodStartDay = 5;
+                            }
+                            setData(convertedData);
+                        } else {
+                            const finalData = {...sampleData, ...loadedData};
+                            // Dönem başlangıç günü yoksa varsayılan değer ata
+                            if (!finalData.settings.periodStartDay) {
+                                finalData.settings.periodStartDay = 5;
+                            }
+                            setData(finalData);
+                        }
+                    } catch (error) {
+                        console.error('Veri yükleme hatası:', error);
+                        setData(sampleData);
+                    }
+                } else {
+                    setData(sampleData);
                 }
             }, []);
 
             useEffect(() => {
-                localStorage.setItem('overtimes', JSON.stringify(overtimes));
-            }, [overtimes]);
+                localStorage.setItem('overtimeData', JSON.stringify(data));
+                document.documentElement.setAttribute('data-theme', data.settings.theme);
+            }, [data]);
 
-            const selectHours = (selectedHours) => {
-                setHours(selectedHours.toString());
+            // Dönem hesaplama fonksiyonları
+            const getPeriodDates = (offset = 0) => {
+                const today = new Date();
+                const currentMonth = today.getMonth();
+                const currentYear = today.getFullYear();
+                const periodStartDay = data.settings.periodStartDay;
+                
+                // Mevcut dönemin başlangıç tarihini hesapla
+                let startMonth = currentMonth;
+                let startYear = currentYear;
+                
+                if (today.getDate() < periodStartDay) {
+                    startMonth = currentMonth - 1;
+                    if (startMonth < 0) {
+                        startMonth = 11;
+                        startYear = currentYear - 1;
+                    }
+                }
+                
+                // Offset'i uygula
+                startMonth += offset;
+                while (startMonth < 0) {
+                    startMonth += 12;
+                    startYear -= 1;
+                }
+                while (startMonth > 11) {
+                    startMonth -= 12;
+                    startYear += 1;
+                }
+                
+                const startDate = new Date(startYear, startMonth, periodStartDay);
+                
+                // Bitiş tarihi (bir sonraki ayın aynı günü - 1 gün)
+                let endMonth = startMonth + 1;
+                let endYear = startYear;
+                if (endMonth > 11) {
+                    endMonth = 0;
+                    endYear += 1;
+                }
+                const endDate = new Date(endYear, endMonth, periodStartDay - 1);
+                
+                return { startDate, endDate };
             };
 
-                        const addOvertime = () => {
+            const getCurrentPeriod = () => {
+                return getPeriodDates(currentPeriodOffset);
+            };
+
+            const getPeriodName = (offset = 0) => {
+                const { startDate, endDate } = getPeriodDates(offset);
+                const startMonth = startDate.toLocaleDateString('tr-TR', { month: 'long' });
+                const endMonth = endDate.toLocaleDateString('tr-TR', { month: 'long' });
+                const startYear = startDate.getFullYear();
+                const endYear = endDate.getFullYear();
+                
+                if (startMonth === endMonth && startYear === endYear) {
+                    return `${startMonth} ${startYear}`;
+                } else if (startYear === endYear) {
+                    return `${startMonth}-${endMonth} ${startYear}`;
+                } else {
+                    return `${startMonth} ${startYear} - ${endMonth} ${endYear}`;
+                }
+            };
+
+            const getCurrentPeriodOvertimes = () => {
+                const { startDate, endDate } = getCurrentPeriod();
+                return data.overtimes.filter(overtime => {
+                    const overtimeDate = new Date(overtime.date);
+                    return overtimeDate >= startDate && overtimeDate <= endDate;
+                });
+            };
+
+            const currentPeriodOvertimes = getCurrentPeriodOvertimes();
+            const totalHours = currentPeriodOvertimes.reduce((sum, overtime) => sum + overtime.hours, 0);
+            const avgHours = currentPeriodOvertimes.length > 0 ? (totalHours / currentPeriodOvertimes.length).toFixed(1) : 0;
+
+            const addOvertime = () => {
                 if (!hours || parseFloat(hours) <= 0) {
                     alert('Lütfen geçerli bir saat girin!');
                     return;
@@ -419,156 +653,399 @@
                     note: note.trim()
                 };
 
-                setOvertimes([...overtimes, newOvertime]);
+                setData(prev => ({
+                    ...prev,
+                    overtimes: [...prev.overtimes, newOvertime]
+                }));
+
                 setHours('');
                 setNote('');
-                
-                // Success animation
-                const btn = document.querySelector('.btn');
-                btn.classList.add('success-animation');
-                setTimeout(() => btn.classList.remove('success-animation'), 600);
             };
 
             const deleteOvertime = (id) => {
-                setOvertimes(overtimes.filter(overtime => overtime.id !== id));
+                setData(prev => ({
+                    ...prev,
+                    overtimes: prev.overtimes.filter(overtime => overtime.id !== id)
+                }));
             };
 
-            const totalHours = overtimes.reduce((sum, overtime) => sum + overtime.hours, 0);
-            const avgHours = overtimes.length > 0 ? (totalHours / overtimes.length).toFixed(1) : 0;
+            const changeTheme = (theme) => {
+                setData(prev => ({
+                    ...prev,
+                    settings: { ...prev.settings, theme }
+                }));
+            };
 
-            const hourOptions = [0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5];
+            const changePeriodStartDay = (day) => {
+                setData(prev => ({
+                    ...prev,
+                    settings: { ...prev.settings, periodStartDay: day }
+                }));
+                setCurrentPeriodOffset(0); // Mevcut döneme dön
+            };
+
+                        const exportData = () => {
+                const dataStr = JSON.stringify(data, null, 2);
+                const dataBlob = new Blob([dataStr], {type: 'application/json'});
+                const url = URL.createObjectURL(dataBlob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `fazla-mesai-${new Date().toISOString().split('T')[0]}.json`;
+                link.click();
+                URL.revokeObjectURL(url);
+            };
+
+            const importData = (event) => {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        try {
+                            const importedData = JSON.parse(e.target.result);
+                            setData({...sampleData, ...importedData});
+                            alert('Veriler başarıyla içe aktarıldı!');
+                        } catch (error) {
+                            alert('Dosya formatı hatalı!');
+                        }
+                    };
+                    reader.readAsText(file);
+                }
+                event.target.value = '';
+            };
+
+            const clearAllData = () => {
+                if (confirm('Tüm veriler silinecek. Emin misiniz?')) {
+                    setData(sampleData);
+                    setCurrentPeriodOffset(0);
+                    alert('Tüm veriler silindi!');
+                }
+            };
+
+            // Dönem navigasyonu
+            const goToPreviousPeriod = () => {
+                setCurrentPeriodOffset(prev => prev - 1);
+            };
+
+            const goToNextPeriod = () => {
+                setCurrentPeriodOffset(prev => prev + 1);
+            };
+
+            const goToCurrentPeriod = () => {
+                setCurrentPeriodOffset(0);
+            };
+
+            // Gelecek dönem kontrolü
+            const isNextPeriodAvailable = () => {
+                return currentPeriodOffset < 0;
+            };
+
+            // İlk yüklemede dönem başlangıç gününü ayarla (varsayılan 5)
+            useEffect(() => {
+                if (data.settings.periodStartDay === undefined) {
+                    setData(prev => ({
+                        ...prev,
+                        settings: { ...prev.settings, periodStartDay: 5 }
+                    }));
+                }
+            }, [data.settings.periodStartDay]);
 
             return (
                 <div className="app">
                     <div className="header">
                         <h1>
-                            <img src="logo.svg" alt="Logo" style={{width: '40px', height: '40px', marginRight: '10px', verticalAlign: 'middle'}} />
-                            Fazla Mesai
+                            <i className="fas fa-clock"></i>
+                            Fazla Mesai Takip
                         </h1>
-                        <p>Mesai saatlerinizi takip edin</p>
+                        <p>Mesai saatlerinizi kolayca takip edin</p>
+                        <button className="settings-btn" onClick={() => setShowSettings(true)}>
+                            <i className="fas fa-cog"></i>
+                        </button>
                     </div>
 
-                    {totalHours > 0 && (
+                    {/* Dönem Navigasyonu */}
+                    <div className="period-navigation">
+                        <button 
+                            className="nav-btn" 
+                            onClick={goToPreviousPeriod}
+                        >
+                            <i className="fas fa-chevron-left"></i> Önceki
+                        </button>
+                        
+                        <div className="current-period">
+                            {getPeriodName(currentPeriodOffset)}
+                            {currentPeriodOffset === 0 && (
+                                <div style={{fontSize: '12px', opacity: 0.8}}>Mevcut Dönem</div>
+                            )}
+                        </div>
+                        
+                        <button 
+                            className="nav-btn" 
+                            onClick={goToNextPeriod}
+                            disabled={!isNextPeriodAvailable()}
+                        >
+                            Sonraki <i className="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+
+                    {/* Özet Kartı */}
+                    <div className="card">
                         <div className="summary">
-                            <h3>Toplam Fazla Mesai</h3>
-                            <div className="total-hours">{totalHours} saat</div>
+                            <h3>Bu Dönem Toplam</h3>
+                            <div className="total-hours">{totalHours.toFixed(1)} saat</div>
                             <div className="stats-grid">
                                 <div className="stat-item">
-                                    <div className="stat-value">{overtimes.length}</div>
+                                    <div className="stat-value">{currentPeriodOvertimes.length}</div>
                                     <div className="stat-label">Gün</div>
                                 </div>
                                 <div className="stat-item">
                                     <div className="stat-value">{avgHours}</div>
                                     <div className="stat-label">Ortalama</div>
                                 </div>
+                                <div className="stat-item">
+                                    <div className="stat-value">
+                                        {currentPeriodOvertimes.length > 0 ? 
+                                            Math.max(...currentPeriodOvertimes.map(o => o.hours)).toFixed(1) : 0}
+                                    </div>
+                                    <div className="stat-label">En Fazla</div>
+                                </div>
                             </div>
+                        </div>
+                    </div>
+
+                    {/* Sadece mevcut dönemde mesai ekleme formu göster */}
+                    {currentPeriodOffset === 0 && (
+                        <div className="card">
+                            <h3 style={{marginBottom: '15px', fontSize: '18px'}}>
+                                <i className="fas fa-plus-circle"></i> Yeni Mesai Ekle
+                            </h3>
+                            
+                            <div className="input-group">
+                                <label>Tarih</label>
+                                <input 
+                                    type="date" 
+                                    value={date} 
+                                    onChange={(e) => setDate(e.target.value)}
+                                />
+                            </div>
+
+                            <div className="input-group">
+                                <label>Mesai Saati</label>
+                                <input 
+                                    type="number" 
+                                    step="0.5" 
+                                    min="0" 
+                                    max="24"
+                                    placeholder="Örn: 2.5" 
+                                    value={hours} 
+                                    onChange={(e) => setHours(e.target.value)}
+                                />
+                                <div className="hour-buttons">
+                                    {data.settings.defaultHours.map(hour => (
+                                        <button 
+                                            key={hour}
+                                            className={`hour-btn ${hours == hour ? 'selected' : ''}`}
+                                            onClick={() => setHours(hour.toString())}
+                                        >
+                                            {hour}h
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div className="input-group">
+                                <label>Not (İsteğe bağlı)</label>
+                                <textarea 
+                                    placeholder="Mesai sebebi, proje adı vb." 
+                                    value={note} 
+                                    onChange={(e) => setNote(e.target.value)}
+                                    rows="2"
+                                />
+                            </div>
+
+                            <button className="btn" onClick={addOvertime}>
+                                <i className="fas fa-save"></i> Mesai Ekle
+                            </button>
                         </div>
                     )}
 
+                    {/* Mesai Listesi */}
                     <div className="card">
-                        <div className="input-group">
-                            <label>Tarih</label>
-                            <input
-                                type="date"
-                                value={date}
-                                onChange={(e) => setDate(e.target.value)}
-                            />
-                        </div>
-
-                        <div className="input-group">
-                            <label>Fazla Mesai Saati</label>
-                            <div className="input-with-icon">
-                                <input
-                                    type="number"
-                                    step="0.5"
-                                    min="0"
-                                    placeholder="Saat girin"
-                                    value={hours}
-                                    onChange={(e) => setHours(e.target.value)}
-                                />
-                                <i className="fas fa-clock"></i>
-                            </div>
-                            <div className="hour-buttons">
-                                {hourOptions.map(hour => (
-                                    <button
-                                        key={hour}
-                                        className={`hour-btn ${hours === hour.toString() ? 'selected' : ''}`}
-                                        onClick={() => selectHours(hour)}
-                                    >
-                                        {hour}h
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
-
-                        <div className="input-group">
-                            <label>Not (İsteğe bağlı)</label>
-                            <textarea
-                                placeholder="Proje detayları, açıklama..."
-                                value={note}
-                                onChange={(e) => setNote(e.target.value)}
-                                rows="3"
-                            />
-                        </div>
-
-                        <button className="btn" onClick={addOvertime}>
-                            <i className="fas fa-plus"></i> Fazla Mesai Ekle
-                        </button>
-                    </div>
-
-                    <div className="card">
-                        <h3 style={{marginBottom: '20px', color: '#333'}}>
+                        <h3 style={{marginBottom: '15px', fontSize: '18px'}}>
                             <i className="fas fa-list"></i> Mesai Geçmişi
+                            {currentPeriodOffset !== 0 && (
+                                <span style={{fontSize: '12px', fontWeight: 'normal', marginLeft: '10px'}}>
+                                    ({getPeriodName(currentPeriodOffset)})
+                                </span>
+                            )}
                         </h3>
                         
-                        {overtimes.length === 0 ? (
+                        {currentPeriodOvertimes.length === 0 ? (
                             <div className="empty-state">
                                 <i className="fas fa-calendar-times"></i>
-                                <p>Henüz fazla mesai kaydı yok</p>
+                                <p>Bu dönemde henüz mesai kaydı yok</p>
+                                {currentPeriodOffset === 0 && (
+                                    <p style={{fontSize: '12px', marginTop: '5px'}}>
+                                        Yukarıdaki formdan yeni mesai ekleyebilirsiniz
+                                    </p>
+                                )}
                             </div>
                         ) : (
-                            overtimes
-                                .sort((a, b) => new Date(b.date) - new Date(a.date))
-                                .map(overtime => (
+                            <div className="overtime-list">
+                                {currentPeriodOvertimes
+                                    .sort((a, b) => new Date(b.date) - new Date(a.date))
+                                    .map(overtime => (
                                     <div key={overtime.id} className="overtime-item">
                                         <div className="overtime-header">
-                                            <div>
-                                                <div className="overtime-date">
-                                                    {new Date(overtime.date).toLocaleDateString('tr-TR')}
-                                                </div>
-                                                <div className="overtime-hours">
-                                                    <i className="fas fa-clock"></i>
-                                                    {overtime.hours} saat
-                                                </div>
+                                            <span className="overtime-date">
+                                                {new Date(overtime.date).toLocaleDateString('tr-TR', {
+                                                    day: 'numeric',
+                                                    month: 'long',
+                                                    year: 'numeric'
+                                                })}
+                                            </span>
+                                            <div style={{display: 'flex', alignItems: 'center', gap: '10px'}}>
+                                                <span className="overtime-hours">{overtime.hours}h</span>
+                                                {currentPeriodOffset === 0 && (
+                                                    <button 
+                                                        className="delete-btn"
+                                                        onClick={() => deleteOvertime(overtime.id)}
+                                                    >
+                                                        <i className="fas fa-trash"></i>
+                                                    </button>
+                                                )}
                                             </div>
-                                            <button
-                                                className="delete-btn"
-                                                onClick={() => deleteOvertime(overtime.id)}
-                                            >
-                                                <i className="fas fa-trash"></i>
-                                            </button>
                                         </div>
                                         {overtime.note && (
-                                            <div className="overtime-note">
-                                                <i className="fas fa-sticky-note"></i> {overtime.note}
-                                            </div>
+                                            <div className="overtime-note">{overtime.note}</div>
                                         )}
                                     </div>
-                                ))
+                                ))}
+                            </div>
                         )}
                     </div>
+
+                    {/* Mevcut döneme dön butonu */}
+                    {currentPeriodOffset !== 0 && (
+                        <div style={{textAlign: 'center', marginBottom: '20px'}}>
+                            <button 
+                                className="btn" 
+                                onClick={goToCurrentPeriod}
+                                style={{width: 'auto', padding: '10px 20px'}}
+                            >
+                                <i className="fas fa-home"></i> Mevcut Döneme Dön
+                            </button>
+                        </div>
+                    )}
+
+                    {/* Ayarlar Modal */}
+                    {showSettings && (
+                        <div className="modal" onClick={() => setShowSettings(false)}>
+                            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                                <div className="modal-header">
+                                    <h3 className="modal-title">
+                                        <i className="fas fa-cog"></i> Ayarlar
+                                    </h3>
+                                    <button className="close-btn" onClick={() => setShowSettings(false)}>
+                                        <i className="fas fa-times"></i>
+                                    </button>
+                                </div>
+
+                                <div style={{marginBottom: '20px'}}>
+                                    <h4 style={{marginBottom: '10px', fontSize: '14px'}}>
+                                        <i className="fas fa-palette"></i> Tema
+                                    </h4>
+                                    <div className="theme-selector">
+                                        {[
+                                            {key: 'default', name: 'Varsayılan', class: 'default'},
+                                            {key: 'dark', name: 'Koyu', class: 'dark'},
+                                            {key: 'minimal', name: 'Minimal', class: 'minimal'}
+                                        ].map(theme => (
+                                            <button
+                                                key={theme.key}
+                                                className={`theme-btn ${data.settings.theme === theme.key ? 'active' : ''}`}
+                                                onClick={() => changeTheme(theme.key)}
+                                            >
+                                                <div className={`theme-preview ${theme.class}`}></div>
+                                                                                                <div style={{fontSize: '12px'}}>{theme.name}</div>
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <div style={{marginBottom: '20px'}}>
+                                    <h4 style={{marginBottom: '10px', fontSize: '14px'}}>
+                                        <i className="fas fa-calendar-alt"></i> Dönem Başlangıç Günü
+                                    </h4>
+                                    <p style={{fontSize: '12px', color: 'var(--text-light)', marginBottom: '10px'}}>
+                                        Her ayın hangi günü yeni dönem başlasın?
+                                    </p>
+                                    <div className="period-day-selector">
+                                        {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31].map(day => (
+                                            <button
+                                                key={day}
+                                                className={`day-btn ${data.settings.periodStartDay === day ? 'active' : ''}`}
+                                                onClick={() => changePeriodStartDay(day)}
+                                            >
+                                                {day}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <div style={{marginBottom: '20px'}}>
+                                    <h4 style={{marginBottom: '10px', fontSize: '14px'}}>
+                                        <i className="fas fa-download"></i> Veri Yönetimi
+                                    </h4>
+                                    <div className="export-import">
+                                        <button className="btn-secondary" onClick={exportData}>
+                                            <i className="fas fa-download"></i> Dışa Aktar
+                                        </button>
+                                        <label className="btn-secondary" style={{cursor: 'pointer', textAlign: 'center'}}>
+                                            <i className="fas fa-upload"></i> İçe Aktar
+                                            <input 
+                                                type="file" 
+                                                accept=".json" 
+                                                onChange={importData}
+                                                style={{display: 'none'}}
+                                            />
+                                        </label>
+                                    </div>
+                                    <button 
+                                        className="btn-secondary" 
+                                        onClick={clearAllData}
+                                        style={{
+                                            width: '100%', 
+                                            marginTop: '10px', 
+                                            background: 'var(--danger)'
+                                        }}
+                                    >
+                                        <i className="fas fa-trash"></i> Tüm Verileri Sil
+                                    </button>
+                                </div>
+
+                                <div style={{fontSize: '12px', color: 'var(--text-light)', textAlign: 'center'}}>
+                                    <p>Fazla Mesai Takip v2.0</p>
+                                    <p>Verileriniz sadece tarayıcınızda saklanır</p>
+                                </div>
+                            </div>
+                        </div>
+                    )}
                 </div>
             );
         }
 
         ReactDOM.render(<OvertimeTracker />, document.getElementById('root'));
 
-        // PWA Service Worker
+        // Service Worker kaydı
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js')
-                    .then(registration => console.log('SW registered'))
-                    .catch(error => console.log('SW registration failed'));
+                navigator.serviceWorker.register('./sw.js')
+                    .then(registration => {
+                        console.log('SW registered: ', registration);
+                    })
+                    .catch(registrationError => {
+                        console.log('SW registration failed: ', registrationError);
+                    });
             });
         }
     </script>
